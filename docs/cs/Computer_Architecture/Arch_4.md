@@ -49,23 +49,34 @@ caches (Icache and Dcache)
 Write Hits
 
 - **Write-Through** Policy: Always write data to cache and to memory (through cache)
-- **Write-Back** Policy: Write data only to cache, then update memory when block is removed
-    - Dirty bit Extra bit per cache row that is set if block was written to (is "dirty") and needs to be written back
+- **Write-Back** Policy: Write data only to cache, then update memory when block is replaced
+    - clean block: no extra traffic
+    - dirty block: extra “writeback” of block
+
+```armasm
+# If 512 and 1024 map to the same cache block:
+# the cache line becomes dirty but memory is not updated yet.
+SW R3,512(R0)
+# cache miss,evict block of 512, must write back. Instead of waiting for memory to finish writing, the dirty block is placed into the write-back buffer so the cache can continue.
+LW R1,1024(R0)  
+# if the write-back buffer hasn't finished writing the dirty block to memory, load will get old data value from memory
+LW R2,512(R0)
+```
 
 Write Miss
 
 - **Write Allocate** policy: when we bring the block into the cache after a write miss
-    - Write allocate almost always paired with write-back(Memory is always up-to-date)
+    - Write allocate almost always paired with write-back(Data is likely to be used again)
 
 - **No Write Allocate** policy: only change main memory after a write miss
-    - No write allocate typically paired with write-through(Cache is always up-to-date)
+    - No write allocate typically paired with write-through(Data is not likely to be used again)
 
 ## Processor Address Fields
 
 a cache of fixed size (C), Memory is (A) byte-addressed
 
 - Offset: denotes block size: (# = K) Bytes
-- Index:  Can’t fit all blocks at once, multiple blocks in memory must map to the same “set” in cache 
+- Index:  array of block “frames”
 
     (# = $log_2{(C/K/N)}$)
 
@@ -73,8 +84,13 @@ a cache of fixed size (C), Memory is (A) byte-addressed
     - Direct-mapped (N = 1): max Index bits
     - N-way set-associative: somewhere in-between
     
-- Tag: f identifying which memory block is currently in each
-cache slot (T = A – I – O)
+- Tag: Each frame can hold one of $2^T$ blocks (T = A – I – O)
+
+Lookup algorithm
+- Read frame indicated by index bits
+- "Hit" if tag matches and valid bit is set
+- Otherwise, a "miss". Get data from next level
+
 
 <table>
 <tr><th>type</th><th colspan="3">Fields</th></tr>
@@ -96,7 +112,7 @@ cache slot (T = A – I – O)
     - Dirty bit (1 bit if write-back)
     - Any necessary replacement management bits (“LRU bits”)
 
-    Total bits in cache = $(C/K) \times (8 \times 2^{O} + Tag + 1 + 1 + ?)$ bits
+    Total bits in cache = # of frames $\times$ bits per frame = $(C/K) \times (8 \times 2^{O} + Tag + 1 + 1 + ?)$ bits
 
 - To check a fully associative cache
 
