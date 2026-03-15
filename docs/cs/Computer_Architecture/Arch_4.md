@@ -24,8 +24,10 @@
 
     Cache does not have desired block, so fetch from memory and put in empty (invalid) slot
 
-Average Memory Access Time(AMAT) = Hit time + Miss rate × 
+Average Memory Access Time(AMAT) = (1−Miss Rate)× Hit Time + Miss Rate × (Hit Time + Miss Penalty) = Hit time + Miss rate × 
 Miss penalty
+
+CPI = CPI + $\text{CPI}_{I\$}$ + $\text{CPI}_{D\$}$
 
 ### Cache block replacement policy
 
