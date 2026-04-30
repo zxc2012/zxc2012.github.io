@@ -160,5 +160,3 @@ Data dependency between instructions
     (3)Code Scheduling
 
     ![20220402211539](https://raw.githubusercontent.com/zxc2012/image/main/20220402211912.png)
-
-#### Control Hazard

@@ -120,14 +120,24 @@ Conservative Out-of-order Load	Execution
 ![20220522161722](https://raw.githubusercontent.com/zxc2012/image/main/20220522161722.png)
 
 ## Branch Prediction
-### BHT
+### Static branch prediction
 
+Flush: penalty 2
+
+![20260429141321](https://raw.githubusercontent.com/zxc2012/image/main/20260429141321.png)
+
+Fast branch: have branch instr’s that can resolve in D, not X, penalty 1
+- On taken branch, must flush one instr and “bypass” from thedecode 
+stage
+- Must now have additional comparison instr’s (e.g., cmplt, slt) to 
+support complex tests
+### Dynamic branch prediction
 - Temporal correlation: The way a branch resolves may	be a good predictor of the	way	it	will resolve at	the next execution
 - Spatial correlation: Several branches may resolve in a	highly correlated manner(a preferred path of execution)
 
 #### Temporal Correlation
 
-One bit Branch history predictor
+One bit Branch history table (BHT)
 
 last fail -> invert the bit
 
@@ -145,11 +155,13 @@ Branch History Table
 
 #### Spatial Correlation
 
-Notion: A History register, records the direction of the last N branches	executed by	the	processor
+Branch history register (BHR): A History register, records the direction of the last N branches	executed by	the	processor
 
-![20220529170306](https://raw.githubusercontent.com/zxc2012/image/main/20220529170306.png)
+1-bit BHT+3-bit BHR
 
-### BTB
+![20260430122911](https://raw.githubusercontent.com/zxc2012/image/main/20260430122911.png)
+
+#### BTB
 
 Limitations of BHT
 
