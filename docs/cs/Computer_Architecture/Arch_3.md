@@ -160,3 +160,55 @@ Data dependency between instructions
     (3)Code Scheduling
 
     ![20220402211539](https://raw.githubusercontent.com/zxc2012/image/main/20220402211912.png)
+
+## Branch Prediction
+### Static branch prediction
+
+Flush: penalty 2
+
+![20260429141321](https://raw.githubusercontent.com/zxc2012/image/main/20260429141321.png)
+
+Fast branch: have branch instr’s that can resolve in D, not X, penalty 1
+- On taken branch, must flush one instr and “bypass” from thedecode 
+stage
+- Must now have additional comparison instr’s (e.g., cmplt, slt) to 
+support complex tests
+### Dynamic branch prediction
+- Temporal correlation: The way a branch resolves may	be a good predictor of the	way	it	will resolve at	the next execution
+- Spatial correlation: Several branches may resolve in a	highly correlated manner(a preferred path of execution)
+
+#### Temporal Correlation
+
+One bit Branch history table (BHT)
+
+last fail -> invert the bit
+
+![20220529165614](https://raw.githubusercontent.com/zxc2012/image/main/20220529165614.png)
+
+Two bits Branch predictor
+
+Change the prediction after two	consecutive	mis-predictions
+
+![20220529165814](https://raw.githubusercontent.com/zxc2012/image/main/20220529165814.png)
+
+Branch History Table
+
+![20220529165939](https://raw.githubusercontent.com/zxc2012/image/main/20220529165939.png)
+
+#### Spatial Correlation
+
+Branch history register (BHR): A History register, records the direction of the last N branches	executed by	the	processor
+
+1-bit BHT+3-bit BHR
+
+![20260430122911](https://raw.githubusercontent.com/zxc2012/image/main/20260430122911.png)
+
+#### BTB
+
+Limitations of BHT
+
+![20220529170514](https://raw.githubusercontent.com/zxc2012/image/main/20220529170514.png)
+
+Branch Target Buffer
+
+![20220529170628](https://raw.githubusercontent.com/zxc2012/image/main/20220529170628.png)
