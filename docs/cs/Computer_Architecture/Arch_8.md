@@ -6,10 +6,9 @@ Have cache	watch (or snoop	upon) other	memory transactions,and	then “do the ri
 
 ![20220614205903](https://raw.githubusercontent.com/zxc2012/image/main/20220614205903.png)
 
-Cache Coherence	Protocols
-- write miss: the address is invalidated in all other
-caches before the write is performed
-- read miss: if a dirty copy is found in some cache, a writeback is performed by that cache before the memory is read 
+Cache Coherence	Protocols (Other cache event)
+- write miss: If the CPU wants to write to a shared block, it needs to gain exclusive ownership. The cache issues a upgrade miss. All other caches with the requested block for that block must invalidate before the write is performed. If my cache doesn't have a copy, it will remain invalidated.
+- read miss: If a dirty copy is found in my cache, a writeback is performed by my cache before the memory is read 
 
 #### MSI
 
