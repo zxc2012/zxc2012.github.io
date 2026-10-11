@@ -4,12 +4,82 @@ import TabItem from '@theme/TabItem';
 # 3 Data Structure
 ## Big O Notation
 
-- f(n) = O(g(n))
+- $f(n) = O(g(n))$
     - $\exist k>0,n_0,\forall n>n_0, f(n)\leq kg(n)$
-- f(n) = Ω(g(n))
+- $f(n) = \Omega(g(n))$
     - $\exist k>0,n_0,\forall n>n_0, f(n)\geq kg(n)$
-- f(n) = Θ(g(n))
+- $f(n) = \Theta(g(n))$
     - $\exist k_1>0, k_2>0,n_0,\forall n>n_0, k_1g(n)\leq f(n)\leq k_2g(n)$
+### Substution Method
+
+- Base case: show that the statement is true for the smallest value of 𝑛 (typically 0)
+- Induction step: assuming that the statement is true for any $k < n$, show that it must also hold for $n$
+
+![20240130203809](https://raw.githubusercontent.com/zxc2012/image/main/20240130203809.png)
+
+### Master Method
+
+$$T(n) = \begin{cases}
+d & n \leq n_0 \\
+aT(\frac nb) + f(n) & otherwise 
+\end{cases}
+$$
+
+Compare which part is bigger
+
+- case1: for some $\epsilon > 0$, $f(n) = O(n^{\log_b^a - \epsilon}) \Rightarrow T(n) = \Theta(n^{\log_b^a})$
+- case2: $f(n) = \Theta(n^{\log_b^a}) \Rightarrow T(n) = \Theta(n^{\log_b^a}\log n)$
+
+    for some $k\geq 0$, $f(n) = \Theta(n^{\log_b^a}(\log n)^k)\Rightarrow T(n) = \Theta(n^{\log_b^a}(\log n)^{k+1})$  
+- case3: for some $\epsilon > 0$, $f(n) = \Omega(n^{\log_b^a} + \epsilon)$ and $\exist c < 1, \forall n > n_0, af(\frac nb) \leq cf(n)$ $\Rightarrow T(n) = \Theta (f(n))$
+
+## P and NP
+
+Problems, Instances and Algorithms:
+
+- Problem: Max-Flow
+- Instance: A graph G with edge-capacities, two vertices s, t, and an integer k
+- Algorithm: It takes as input an instance, and outputs either 'YES' or 'NO'
+
+Reductions:
+- A $\leq$ B: A reduces to B if an instance $I_A$ is YES iff $I_B$ is YES
+- A $\leq_p$ B: A is polynomial time reducible to B. There is an algorithm A that has the following properties:
+    - given an instance $I_X$ of X, A produces an instance $I_Y$
+    - A runs in time $O(|I_X|^k)$.
+    - Answer to $I_X$ is YES iff answer to $I_Y$ is YES.
+- Theorem1: If A $\leq_p$ B and B $\in$ P, then A $\in$ P
+- Theorem2: If A $\leq_p$ B and B $\leq_p$ C, then A $\leq_p$ C (transitivity)
+
+P and NP:
+- P(Polynomial): The set of all decision problems that have an algorithm that runs intime $O(n^k)$ for some constant $k$
+- NP(nondeterministic polynomial): NP is the set of existential questions that can be verified in polynomial time
+- NP hard: B is NP hard if A $\leq_p$ B for all A $\in$ NP
+- NP complete
+    - Definition: B in NP and B is NP hard
+    - Theorem: If B $\leq_p$ C, C $\in$ NP, and B is NP complete, then C is NP complete(Proof using transitivity)
+
+### Typical NP complete problem
+- SAT
+- 3-SAT
+- Clique
+- Independent Set
+- vertex cover
+- Hamiltonian Cycle
+
+3SAT $\leq_p$ Independent Set
+- If the formula is satisfiable, there is at least one true
+literal in each clause. Let S be a set of one such true literal from
+each clause. |S| = k and no two nodes in S are connected by an
+edge.
+- If the graph has an independent set S of size k, we know that
+it has one node from each “clause triangle.” Set those terms to
+true. This is possible because no 2 are negations of each other. 
+
+![20240508150921](https://raw.githubusercontent.com/zxc2012/image/main/20240508150921.png)
+
+DNF(disjunctive normal form)
+
+CNF(conjunctive normal form)
 
 ## Hashmap
 | Implement |contains(x) | add(x)|
