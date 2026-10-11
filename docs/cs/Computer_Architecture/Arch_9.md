@@ -102,10 +102,6 @@ Decoding and Despatching all the instructions into ROB first, then go back and e
 
 ![Execution](https://raw.githubusercontent.com/zxc2012/image/main/Execution.gif)
 
-### Superscalar Register Renaming 
-
-![20220522161111](https://raw.githubusercontent.com/zxc2012/image/main/20220522161111.png)
-
 ## Load-Store Issue
 
 - Store commits	when oldest	instruction	and	
@@ -119,42 +115,17 @@ Conservative Out-of-order Load	Execution
 
 ![20220522161722](https://raw.githubusercontent.com/zxc2012/image/main/20220522161722.png)
 
-## Branch Prediction
-### BHT
+## Superscaler pipeline
 
-- Temporal correlation: The way a branch resolves may	be a good predictor of the	way	it	will resolve at	the next execution
-- Spatial correlation: Several branches may resolve in a	highly correlated manner(a preferred path of execution)
+![20260430131403](https://raw.githubusercontent.com/zxc2012/image/main/20260430131403.png)
 
-#### Temporal Correlation
+Stall logic (load-use) for a N-way pipeline
 
-One bit Branch history predictor
+| Cycle | Instruction        |
+| ----- | ------------------ |
+| N     | LOAD R1 ← MEM[100] |
+| 2N     | ADD R2 ← R1 + R3   |
 
-last fail -> invert the bit
 
-![20220529165614](https://raw.githubusercontent.com/zxc2012/image/main/20220529165614.png)
-
-Two bits Branch predictor
-
-Change the prediction after two	consecutive	mis-predictions
-
-![20220529165814](https://raw.githubusercontent.com/zxc2012/image/main/20220529165814.png)
-
-Branch History Table
-
-![20220529165939](https://raw.githubusercontent.com/zxc2012/image/main/20220529165939.png)
-
-#### Spatial Correlation
-
-Notion: A History register, records the direction of the last N branches	executed by	the	processor
-
-![20220529170306](https://raw.githubusercontent.com/zxc2012/image/main/20220529170306.png)
-
-### BTB
-
-Limitations of BHT
-
-![20220529170514](https://raw.githubusercontent.com/zxc2012/image/main/20220529170514.png)
-
-Branch Target Buffer
-
-![20220529170628](https://raw.githubusercontent.com/zxc2012/image/main/20220529170628.png)
+- R1 and R3 both check with R1 N times $\rightarrow$ $2N^2$ checks
+- within the fetch bundle” src dependence cross-check: $N\times(N-1)$

@@ -34,14 +34,20 @@ In **directed graph**, each $e\in E$ defined as $(u,v)$.
 - Walk is sequence of edges with possible repeated vertex or edge
 - Tour is walk that starts and ends at the same node.
 
+Hamiltonian cycle: A cycle that visits every vertex in graph exactly once
+
 #### Connectivity
 
 u and v are connected if there is a path between u and v
 
-A connected graph is a graph where all pairs of vertices are
-connected.
+- Connected graph: A graph where all pairs of vertices are
+connected
+- Connected component: Maximal set of connected vertices
+- Independent set: No two vertices are connected by an edge
+- Clique: Every pair of vertices is connected by an edge
+- Minimum Vertex Cover: for every edge $(u, v) \in E$, either $u \in V'$ or $v \in V'$. The task is to find the minimum $|V'|$ 
 
-Connected component: maximal set of connected vertices.
+![20240507151659](https://raw.githubusercontent.com/zxc2012/image/main/20240507151659.png)
 
 #### Complete Graph
 
@@ -129,7 +135,6 @@ Claim: distTo[v1] is optimal, and thus future relaxations will fail
 
 Runtime: 
 
-- add: V times, each costing O(log V) time.
 - removeSmallest: V times, each costing O(log V) time.
 - changePriority: E times, each costing O(log V) time.
 
@@ -498,7 +503,7 @@ Modify uni():
 
 Worst case tree height is O(log n)
 
-=> findf and uni are O(log n)
+$\Rightarrow$ findf and uni are O(log n)
 
 ### Minimum Spanning Trees
 
@@ -578,29 +583,89 @@ Assuming E > V, this is just O(ElogE)
 
 ## Network Flow
 ### Definition
-A directed graph G = (V, E). Two special nodes $s,t\in V$ , which are, respectively, a source and sink of G; and capacities $c_e$ > 0 on the edges. We would like to send as much oil as possible from s to t without exceeding the capacities of any of the edges. 
+A flow network is a connected, directed graph G = (V, E).
+- Each edge $e$ has a capacity $c_e > 0$
+- A single source $s \in V$ and a single sink $t \in V$
+- No edge enters the source and no edge leaves the sink
 
-A particular shipping scheme is called a flow and consists of a variable $f_e$ for each edge e of the network, satisfying the following two properties
-- Capacity: $0 \leq f_e\leq c_e$ for each edge e
-- Conservation: $f^{in}_u = f^{out}_u$ for each vertex except s,t
+**Def.** A  flow is a function $f:E\rightarrow R^+$ that assigns a real number to each edge, satisfying the following two properties
+- Capacity: $0 \leq f(e)\leq c_e$ for each edge e
+- Conservation: $f^{in}(u) = f^{out}(u)$ for each vertex except s,t
 
-capacity of the cut: cap(A,B) = $\sum_{(u,v):u\in A,v\in B}c(u,v)$
+capacity of the cut: cap(A,B) = $\sum_{\text{e leaving A}}c_e$
 
-Our task is to maximize the value of the flow v(f) = $f^{out}_s = f^{in}_t$
+Our task is to maximize the value of the flow $v(f) = f^{out}(s)$
+
+![20240306113519](https://raw.githubusercontent.com/zxc2012/image/main/20240306113519.png)
 
 ### Flow and Cut Lemma
 
-Flow Lemma: Let f be any flow, and let (A, B) be any s-t cut.
-Then, the net flow sent across the cut is equal to the amount leaving s
+Flow Lemma: Let f be any flow, and let (A, B) be any s-t cut. Then
 
-$\sum_{e \,\rm{out of}\, A} - \sum_{e \,\rm{in to}\, A} = v(f)$ (Proof Easy)
+$v(f) = f^{out}(A) - f^{in}(A)$ (Proof Easy) $\Rightarrow v(f) = f^{in}(t)$
 
 Cut capacity Lemma: Let f be any flow, and let (A, B) be any s-t
 cut. Then the value of the flow is at most the capacity of the cut. 
 
 $v(f)\leq$ cap(A,B)
 
-Residual Network denotes a flow-increasing opportunity: $G^f = (V, E^f)$, $c^f= \left\{\begin{aligned}
-c_e - f_e,& {\rm if} (u,v)\in E \, {\rm and}\,f_e < c_e\\
-f_e,& {\rm if} (v,u)\in E \,{\rm and}\,f_e > 0
-\end{aligned}\right.$
+### Residual graph
+
+Residual graph $G^f = (V, E^f)$
+
+For an origin edge e = (u, v) in G
+- Remaining capacity left: if $f_e < c_e$, copy the edge e with capacity $c_e - f_e$
+- Erase origin: if $f_e > 0$, include an edge e' = (v, u) with capacity $f_e$
+
+Augmenting Path: 
+- Let P be an s − t path in the residual graph $G_f$
+- Let bottleneck (P, f) be the smallest capacity in $G_f$ on any edge of P
+- We can increase the flow by (P, f)
+
+**Theorem**: maximum flow = minimum cut
+
+Proof: if $f^*$ is maximized, then $G_{f^*}$ has no augmenting path
+
+Let $A^*$ denote the set of vertices that are reachable from s: If there is an augmenting path from s to a vertex v then $v \in S$. Also $t\in B^*$
+
+- Blue edges must be saturated otherwise there would be a forward edge which make an augmenting path
+- Red edges must be empty otherwise there would be a forward edge which make an augmenting path
+
+$$v(f^*) = f^{out}(A^*) - f^{in}(A^*) = cap(A^*,B^*)$$ 
+
+![20240306214613](https://raw.githubusercontent.com/zxc2012/image/main/20240306214613.png)
+
+### Algorithms
+#### Ford-Fulkerson Algorithm
+
+Runtime: O((E+V)f)
+
+Assuming E > V, this is O(Ef)
+
+```cpp
+int dfs(int s, int t, int flow){
+    visit[s] = true;
+    for (Edge e:adjlist[s]){
+        if(e.weight > 0 && !visit[e.from]){
+            int newFlow = dfs(e.to, t, min(flow, e.weight));
+            if(newFlow > 0){
+                e.weight -= newFlow;
+                edge[e.to].weight += newFlow;
+                return newFlow;
+            }
+        }
+    }
+    return -1;
+}
+int ff(int s, int t){
+	int ans = 0;
+	while (1)
+	{
+		memset(visit, false, sizeof(visit));
+		int d = dfs(s, t, inf);
+		if (d == -1)
+			return ans;
+		ans += d;
+	}
+}
+```
